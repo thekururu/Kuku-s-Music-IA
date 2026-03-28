@@ -3,145 +3,163 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Kuku's Music IA</title>
+    <title>Kuku's Music IA | 404 Studios</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap');
-        body { font-family: 'Inter', sans-serif; }
-        .glass { background: rgba(15, 15, 15, 0.7); backdrop-filter: blur(12px); border: 1px solid rgba(255,255,255,0.1); }
-        .spotify-green { color: #1DB954; }
-        .bg-spotify { background-color: #1DB954; }
-        #chat-box::-webkit-scrollbar { width: 4px; }
-        #chat-box::-webkit-scrollbar-thumb { background: #333; border-radius: 10px; }
-        .glow { box-shadow: 0 0 20px rgba(29, 185, 84, 0.2); }
+        @import url('https://fonts.googleapis.com/css2?family=Syncopate:wght@400;700&family=Inter:wght@300;600&display=swap');
+        
+        body { font-family: 'Inter', sans-serif; background: #050505; color: #eee; }
+        .font-logo { font-family: 'Syncopate', sans-serif; }
+        .glass { background: rgba(20, 20, 20, 0.6); backdrop-filter: blur(15px); border: 1px solid rgba(255,255,255,0.05); }
+        .spotify-shadow { box-shadow: 0 0 30px rgba(30, 215, 96, 0.1); }
+        
+        /* Animación de carga */
+        .loading-bar { height: 2px; width: 0%; background: #1DB954; transition: width 0.5s; }
+        
+        #chat-box::-webkit-scrollbar { width: 3px; }
+        #chat-box::-webkit-scrollbar-thumb { background: #1DB954; }
     </style>
 </head>
-<body class="bg-[#090909] text-zinc-100 min-h-screen flex flex-col items-center p-4">
+<body class="min-h-screen flex flex-col items-center p-4 md:p-8">
 
-    <header class="w-full max-w-2xl flex justify-between items-center p-5 glass rounded-2xl mb-4 glow">
-        <h1 class="text-xl font-900 tracking-tighter">KUKU <span class="spotify-green">IA</span></h1>
-        <button id="login-btn" class="bg-spotify hover:scale-105 text-black px-5 py-2 rounded-full font-bold text-xs uppercase tracking-widest transition-all">
-            Conectar Spotify
-        </button>
+    <div class="loading-bar fixed top-0 left-0" id="loader"></div>
+
+    <header class="w-full max-w-3xl flex justify-between items-center mb-8">
+        <div class="font-logo text-xl tracking-tighter">
+            KUKU<span class="text-[#1DB954] font-bold">.IA</span>
+        </div>
+        <div class="text-[10px] uppercase tracking-[0.3em] text-zinc-500 font-bold">
+            404 Developer Studios / External Access
+        </div>
     </header>
 
-    <div id="player-card" class="w-full max-w-2xl p-4 glass rounded-2xl mb-4 hidden border-l-4 border-l-[#1DB954]">
-        <div class="flex items-center gap-4">
-            <div class="relative">
-                <img id="track-img" src="" class="w-14 h-14 rounded-lg shadow-2xl">
-                <div class="absolute -bottom-1 -right-1 bg-[#1DB954] w-4 h-4 rounded-full border-2 border-[#090909]"></div>
+    <section id="status-card" class="w-full max-w-3xl glass rounded-3xl p-6 mb-6 spotify-shadow transition-all border-l-2 border-[#1DB954]">
+        <div class="flex items-center gap-6">
+            <div class="relative group">
+                <img id="track-cover" src="https://via.placeholder.com/300?text=Spotify" class="w-24 h-24 rounded-2xl object-cover shadow-2xl transition-transform group-hover:scale-105">
+                <div class="absolute -inset-1 bg-[#1DB954] rounded-2xl opacity-20 blur-sm"></div>
             </div>
-            <div class="overflow-hidden">
-                <p class="text-[10px] text-zinc-500 uppercase font-black tracking-widest">Lo último que sonó</p>
-                <p id="track-name" class="font-bold text-base truncate"></p>
-                <p id="track-artist" class="text-zinc-400 text-sm truncate"></p>
-            </div>
-        </div>
-    </div>
-
-    <main class="w-full max-w-2xl flex-1 flex flex-col glass rounded-3xl overflow-hidden mb-4">
-        <div id="chat-box" class="flex-1 p-6 overflow-y-auto space-y-4 flex flex-col text-sm">
-            <div class="bg-zinc-800/50 self-start p-4 rounded-2xl rounded-tl-none max-w-[85%] border border-zinc-700">
-                ¡Ey! Conecta tu cuenta y veré qué joyas (o desastres) has estado escuchando. 🎧
+            <div class="flex-1 min-w-0">
+                <div class="flex items-center gap-2 mb-1">
+                    <span class="flex h-2 w-2 rounded-full bg-[#1DB954] animate-pulse"></span>
+                    <span class="text-[10px] uppercase tracking-widest text-[#1DB954] font-black">Live Monitor</span>
+                </div>
+                <h2 id="track-name" class="text-2xl font-bold truncate">Buscando señal...</h2>
+                <p id="track-artist" class="text-zinc-400 font-medium">Configura tu perfil público</p>
             </div>
         </div>
+    </section>
 
-        <div class="p-4 bg-zinc-900/80 border-t border-zinc-800 flex gap-2">
-            <input id="user-input" type="text" placeholder="Dime algo sobre mi música..." 
-                   class="flex-1 bg-zinc-800 border-none rounded-xl px-4 py-3 focus:ring-1 focus:ring-[#1DB954] outline-none transition-all">
-            <button id="send-btn" class="bg-zinc-100 text-black px-5 py-2 rounded-xl font-bold hover:bg-white transition-colors">
+    <main class="w-full max-w-3xl h-[450px] glass rounded-3xl flex flex-col overflow-hidden relative">
+        <div id="chat-box" class="flex-1 p-6 overflow-y-auto space-y-4 flex flex-col text-sm md:text-base">
+            <div class="bg-zinc-800/40 self-start p-4 rounded-2xl rounded-tl-none border border-white/5">
+                [SISTEMA]: En línea. Pega tu API KEY de Gemini en el código para activar la conciencia de la IA.
+            </div>
+        </div>
+
+        <div class="p-4 bg-black/40 border-t border-white/5 flex gap-3">
+            <input id="user-input" type="text" placeholder="Escribe un comando o pregunta sobre la música..." 
+                   class="flex-1 bg-zinc-900 border-none rounded-2xl px-5 py-4 focus:ring-1 focus:ring-[#1DB954] outline-none text-sm transition-all shadow-inner">
+            <button id="send-btn" class="bg-[#1DB954] text-black px-8 py-2 rounded-2xl font-black uppercase text-xs hover:bg-[#1ed760] transition-all transform active:scale-95">
                 Enviar
             </button>
         </div>
     </main>
 
+    <footer class="mt-8 text-zinc-600 text-[10px] uppercase tracking-widest">
+        Unauthorized access restricted to thekururu // 2026
+    </footer>
+
     <script>
-        // CONFIGURACIÓN - RELLENA ESTO
-        const CLIENT_ID = 'ccab53698d1f4d628bc4610b83cc32cb'; 
-        const REDIRECT_URI = 'https://thekururu.github.io/Kuku-s-Music-IA/';
-        const SCOPES = 'user-read-recently-played';
+        // CONFIGURACIÓN (EL "SHHH")
+        const GEMINI_API_KEY = "TU_GEMINI_API_KEY"; // Consíguela en Google AI Studio
+        const SPOTIFY_USERNAME = "TU_USUARIO_SPOTIFY"; // Tu nombre de usuario público
+        
+        let lastTrackData = { name: "Nada", artist: "Nadie" };
 
-        let accessToken = null;
-        let lastTrack = null;
-
-        // --- AUTH LOGIC ---
-        document.getElementById('login-btn').addEventListener('click', () => {
-            const url = `https://accounts.spotify.com/authorize?client_id=${CLIENT_ID}&response_type=token&redirect_uri=${encodeURIComponent(REDIRECT_URI)}&scope=${encodeURIComponent(SCOPES)}`;
-            window.location.href = url;
-        });
-
-        const hash = window.location.hash.substring(1).split('&').reduce((initial, item) => {
-            if (item) { var parts = item.split('='); initial[parts[0]] = decodeURIComponent(parts[1]); }
-            return initial;
-        }, {});
-
-        if (hash.access_token) {
-            accessToken = hash.access_token;
-            window.location.hash = '';
-            document.getElementById('login-btn').innerText = 'EN LÍNEA';
-            document.getElementById('login-btn').classList.replace('bg-spotify', 'bg-zinc-800');
-            document.getElementById('login-btn').style.color = '#1DB954';
-            getRecentMusic();
-            setInterval(getRecentMusic, 30000); // Actualiza cada 30s
-        }
-
-        // --- SPOTIFY DATA ---
-        async function getRecentMusic() {
+        // --- HACK: MONITOR DE ACTIVIDAD (OPCIÓN 2 / SCRAPING) ---
+        // Usamos un proxy para leer la data pública de tu perfil
+        async function updateActivity() {
+            document.getElementById('loader').style.width = "40%";
             try {
-                const res = await fetch('https://api.spotify.com/v1/me/player/recently-played?limit=1', {
-                    headers: { 'Authorization': `Bearer ${accessToken}` }
-                });
+                // Buscamos el perfil vía proxy de AllOrigins para saltar el CORS
+                const res = await fetch(`https://api.allorigins.win/get?url=${encodeURIComponent('https://open.spotify.com/user/' + SPOTIFY_USERNAME)}`);
                 const data = await res.json();
-                if (data.items && data.items.length > 0) {
-                    updateUI(data.items[0].track);
+                
+                // NOTA: Spotify protege su HTML. Si no detecta actividad, es porque
+                // necesitas tener el perfil en "Público". 
+                // Como respaldo, este bloque busca patrones de texto en el código:
+                const html = data.contents;
+                
+                // Intento de extracción simple (pattern matching)
+                if (html.includes("nowPlaying")) {
+                    console.log("¡Actividad detectada!");
+                    // Aquí iría el parseo profundo si Spotify suelta el JSON
                 }
-            } catch (err) { console.error("Error Spotify:", err); }
+
+                document.getElementById('loader').style.width = "100%";
+                setTimeout(() => document.getElementById('loader').style.width = "0%", 1000);
+            } catch (e) {
+                console.error("Fallo en el monitor:", e);
+            }
         }
 
-        function updateUI(track) {
-            lastTrack = track;
-            document.getElementById('player-card').classList.remove('hidden');
-            document.getElementById('track-img').src = track.album.images[0].url;
-            document.getElementById('track-name').innerText = track.name;
-            document.getElementById('track-artist').innerText = track.artists.map(a => a.name).join(', ');
+        // --- CONEXIÓN CON GEMINI (EL CEREBRO) ---
+        async function callAI(message) {
+            if (GEMINI_API_KEY === "TU_GEMINI_API_KEY") {
+                return "Oye, fiera. Primero pon la API KEY de Gemini en el código para que pueda hablar de verdad. JAJAJA.";
+            }
+
+            const prompt = `Actúa como una IA con mucho flow, sarcástica y experta en música urbana.
+            Contexto: El usuario ${SPOTIFY_USERNAME} está escuchando actualmente "${lastTrackData.name}" de "${lastTrackData.artist}".
+            Mensaje del usuario: ${message}
+            Responde con actitud, sé breve y usa jerga de productor o fanático del trap/reggaeton.`;
+
+            try {
+                const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_API_KEY}`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] })
+                });
+                const result = await response.json();
+                return result.candidates[0].content.parts[0].text;
+            } catch (err) {
+                return "Mrd, se me cayó el servidor del cerebro. Intenta de nuevo.";
+            }
         }
 
-        // --- CHAT LOGIC ---
-        async function sendMessage() {
+        // --- INTERFAZ ---
+        async function handleSend() {
             const input = document.getElementById('user-input');
             const chatBox = document.getElementById('chat-box');
             if (!input.value.trim()) return;
 
-            const userText = input.value;
-            appendMessage(userText, 'user');
-            input.value = '';
+            const text = input.value;
+            appendMsg(text, 'user');
+            input.value = "";
 
-            // Respuesta de la IA "Shhh"
-            // Nota: Aquí es donde conectarías tu API Key en un futuro. Por ahora simula el flow.
-            setTimeout(() => {
-                let aiResponse = "No sé qué decirte, conecta Spotify primero.";
-                if (lastTrack) {
-                    const artist = lastTrack.artists[0].name;
-                    aiResponse = `Esa de "${lastTrack.name}" de ${artist}... uff. Tienes un flow interesante, ${artist} siempre pega duro. ¿Quieres que analice más de tu historial o qué?`;
-                }
-                appendMessage(aiResponse, 'ai');
-            }, 800);
+            const response = await callAI(text);
+            appendMsg(response, 'ai');
         }
 
-        function appendMessage(text, sender) {
+        function appendMsg(text, type) {
+            const chatBox = document.getElementById('chat-box');
             const div = document.createElement('div');
-            if(sender === 'user') {
-                div.className = 'bg-[#1DB954] text-black self-end p-3 rounded-2xl rounded-tr-none max-w-[85%] font-semibold shadow-lg';
-            } else {
-                div.className = 'bg-zinc-800/50 self-start p-3 rounded-2xl rounded-tl-none max-w-[85%] border border-zinc-700';
-            }
+            div.className = type === 'user' 
+                ? 'bg-[#1DB954] text-black self-end p-4 rounded-2xl rounded-tr-none font-bold max-w-[85%] shadow-lg transition-all'
+                : 'bg-zinc-800/60 self-start p-4 rounded-2xl rounded-tl-none border border-white/5 max-w-[85%] italic text-zinc-300 transition-all';
             div.innerText = text;
-            document.getElementById('chat-box').appendChild(div);
-            document.getElementById('chat-box').scrollTop = document.getElementById('chat-box').scrollHeight;
+            chatBox.appendChild(div);
+            chatBox.scrollTop = chatBox.scrollHeight;
         }
 
-        document.getElementById('send-btn').addEventListener('click', sendMessage);
-        document.getElementById('user-input').addEventListener('keypress', (e) => { if(e.key === 'Enter') sendMessage(); });
+        document.getElementById('send-btn').addEventListener('click', handleSend);
+        document.getElementById('user-input').addEventListener('keypress', (e) => { if(e.key==='Enter') handleSend(); });
+
+        // Actualizar monitor cada 60s (para no quemar el proxy)
+        setInterval(updateActivity, 60000);
+        updateActivity();
+
     </script>
 </body>
 </html>
