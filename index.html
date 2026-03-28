@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Music Companion</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .glass { background: rgba(255, 255, 255, 0.1); backdrop-filter: blur(10px); }
+        #chat-box::-webkit-scrollbar { width: 5px; }
+        #chat-box::-webkit-scrollbar-thumb { background: #1DB954; border-radius: 10px; }
+    </style>
+</head>
+<body class="bg-zinc-950 text-white font-sans min-h-screen flex flex-col items-center p-4">
+
+    <header class="w-full max-w-2xl flex justify-between items-center p-6 glass rounded-2xl mb-4 border border-zinc-800">
+        <h1 class="text-xl font-bold tracking-tighter">AI <span class="text-[#1DB954]">CHATS</span></h1>
+        <button id="login-btn" class="bg-[#1DB954] hover:bg-[#1ed760] text-black px-4 py-2 rounded-full font-bold text-sm transition">
+            Conectar Spotify
+        </button>
+    </header>
+
+    <div id="player-card" class="w-full max-w-2xl p-4 glass rounded-2xl mb-4 border border-zinc-800 hidden">
+        <div class="flex items-center gap-4">
+            <img id="track-img" src="" class="w-16 h-16 rounded-md shadow-lg border border-zinc-700">
+            <div>
+                <p class="text-xs text-zinc-400 uppercase font-bold">Escuchando ahora</p>
+                <p id="track-name" class="font-bold text-lg leading-tight"></p>
+                <p id="track-artist" class="text-zinc-400"></p>
+            </div>
+        </div>
+    </div>
+
+    <main class="w-full max-w-2xl flex-1 flex flex-col glass rounded-2xl border border-zinc-800 overflow-hidden">
+        <div id="chat-box" class="flex-1 p-6 overflow-y-auto space-y-4 flex flex-col">
+            <div class="bg-zinc-800 self-start p-3 rounded-2xl rounded-tl-none max-w-[80%] text-sm">
+                ¡Hola! Conecta tu Spotify y dime qué te parece lo que estás escuchando.
+            </div>
+        </div>
+
+        <div class="p-4 bg-zinc-900/50 border-t border-zinc-800 flex gap-2">
+            <input id="user-input" type="text" placeholder="Pregúntale a la IA sobre tu música..." 
+                   class="flex-1 bg-zinc-800 border-none rounded-xl px-4 py-3 focus:ring-2 focus:ring-[#1DB954] outline-none text-sm">
+            <button id="send-btn" class="bg-white text-black px-6 py-2 rounded-xl font-bold hover:bg-zinc-200 transition">
+                Enviar
+            </button>
+        </div>
+    </main>
+
+    <script>
+        // Configuración de Spotify
+        const CLIENT_ID = 'TU_CLIENT_ID_AQUI'; 
+        const REDIRECT_URI = window.location.origin + window.location.pathname;
+        const SCOPES = 'user-read-currently-playing';
+
+        let accessToken = null;
+        let currentTrack = null;
+
+        // --- Lógica de Autenticación ---
+        document.getElementById('login-btn').addEventListener('click', () => {
+            const url = `https://accounts.spotify.com/authorize?client_id=${CLIENT_ID}&response_type=token&redirect_uri=${encodeURIComponent(REDIRECT_URI)}&scope=${encodeURIComponent(SCOPES)}`;
+            window.location.href = url;
+        });
+
+        const hash = window.location.hash.substring(1).split('&').reduce((initial, item) => {
+            if (item) { var parts = item.split('='); initial[parts[0]] = decodeURIComponent(parts[1]); }
+            return initial;
+        }, {});
+
+        if (hash.access_token) {
+            accessToken = hash.access_token;
+            window.location.hash = '';
+            document.getElementById('login-btn').innerText = 'Conectado';
+            setInterval(checkSpotify, 5000); // Check cada 5s
+        }
+
+        // --- Lógica de Spotify ---
+        async function checkSpotify() {
+            try {
+                const res = await fetch('https://api.spotify.com/v1/me/player/currently-playing', {
+                    headers: { 'Authorization': `Bearer ${accessToken}` }
+                });
+                if (res.status === 200) {
+                    const data = await res.json();
+                    updateUI(data.item);
+                }
+            } catch (err) { console.error("Error al obtener música", err); }
+        }
+
+        function updateUI(track) {
+            if (!track) return;
+            currentTrack = track;
+            document.getElementById('player-card').classList.remove('hidden');
+            document.getElementById('track-img').src = track.album.images[0].url;
+            document.getElementById('track-name').innerText = track.name;
+            document.getElementById('track-artist').innerText = track.artists.map(a => a.name).join(', ');
+        }
+
+        // --- Lógica de Chat ---
+        async function sendMessage() {
+            const input = document.getElementById('user-input');
+            const chatBox = document.getElementById('chat-box');
+            if (!input.value.trim()) return;
+
+            // Añadir mensaje usuario
+            appendMessage(input.value, 'user');
+            
+            const prompt = `El usuario está escuchando "${currentTrack?.name}" de ${currentTrack?.artists[0].name}. 
+                           Usuario dice: ${input.value}. Responde con flow, breve y analiza su gusto musical.`;
+
+            input.value = '';
+
+            // Simulación de respuesta (Aquí conectarías con el endpoint de Gemini o tu backend)
+            setTimeout(() => {
+                appendMessage("Ese tema de " + (currentTrack?.artists[0].name || "el artista") + " es una joya. Tienes buen gusto, aunque ese álbum me dejó con ganas de más...", 'ai');
+            }, 1000);
+        }
+
+        function appendMessage(text, sender) {
+            const div = document.createElement('div');
+            div.className = sender === 'user' 
+                ? 'bg-[#1DB954] text-black self-end p-3 rounded-2xl rounded-tr-none max-w-[80%] text-sm font-medium'
+                : 'bg-zinc-800 self-start p-3 rounded-2xl rounded-tl-none max-w-[80%] text-sm';
+            div.innerText = text;
+            document.getElementById('chat-box').appendChild(div);
+            document.getElementById('chat-box').scrollTop = document.getElementById('chat-box').scrollHeight;
+        }
+
+        document.getElementById('send-btn').addEventListener('click', sendMessage);
+    </script>
+</body>
+</html>
